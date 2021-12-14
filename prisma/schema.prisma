@@ -12,14 +12,10 @@ model User {
   userId String @unique
   firstName String 
   lastName String
-  position Position @default(Vertrieber) 
+  position String
   email String @unique
   password String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-enum Position {
-  Leiter
-  Vertrieber
-}
