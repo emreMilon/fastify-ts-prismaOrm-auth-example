@@ -39,6 +39,18 @@ export const registerOptions = {
   handler: authCtrl.register,
 };
 
+export const updateUserOptions = {
+  schema: {
+    body: User,
+    response: {
+      201: {
+        item: User,
+      },
+    },
+  },
+  handler: authCtrl.updateUser,
+};
+
 export const loginOptions = {
   schema: {
     body: User,
@@ -63,6 +75,20 @@ export const logoutOptions = {
     },
   },
   handler: authCtrl.logout,
+};
+
+export const deleteUserOptions = {
+  schema: {
+    response: {
+      201: {
+        type: "object",
+        properties: {
+          message: { type: "string" },
+        },
+      },
+    },
+  },
+  handler: authCtrl.delteUser,
 };
 
 export const getUsersOptions = {

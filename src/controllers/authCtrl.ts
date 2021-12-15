@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { IUser, IDecodedToken } from "../types/interfaces";
 import generateToken from "../config/generateToken";
+import { RouteGenericInterface } from "fastify/types/route";
 
 const token = {
   active: process.env.ACTIVE_TOKEN_SECRET,
@@ -128,6 +129,45 @@ const authCtrl = {
       return reply.code(200).send({ message: "Successfully logged out!" });
     } catch (error: any) {
       reply.code(500).send({ message: error.message });
+    }
+  },
+  updateUser: async (req: FastifyRequest | any, reply: FastifyReply) => {
+    try {
+      const { userId, firstName, lastName, position, email, password } = <
+        IUser
+      >req.body;
+      const hashedPassword = await bcrypt.hash(password, 12);
+      const user: IUser = await prisma.user.update({
+        where: { userId: req.params.id },
+        data: {
+          userId,
+          firstName,
+          lastName,
+          position,
+          email,
+          password: hashedPassword,
+        },
+      });
+
+      reply.code(200).send({
+        status: "OK",
+        msg: "User updated successfully",
+        data: <IUser>user,
+      });
+    } catch (error: any) {
+      reply.code(500).send({ error: error.message });
+    }
+  },
+  delteUser: async (req: FastifyRequest | any, reply: FastifyReply) => {
+    try {
+      const user = await prisma.user.delete({
+        where: { userId: req.params.id },
+      });
+      return reply
+        .code(200)
+        .send({ message: `${user.userId} deleted successfully` });
+    } catch (error: any) {
+      reply.code(500).send({ error: error.message });
     }
   },
 };

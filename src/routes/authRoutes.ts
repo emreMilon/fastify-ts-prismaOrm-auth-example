@@ -6,6 +6,8 @@ import {
   loginOptions,
   refreshCookiesOptions,
   logoutOptions,
+  updateUserOptions,
+  deleteUserOptions,
 } from "./authRoutesOptions";
 
 function authRoutes(
@@ -19,8 +21,8 @@ function authRoutes(
   fastify.post("/api/login", loginOptions);
   fastify.get("/api/refresh_token", refreshCookiesOptions);
   fastify.get("/api/logout", logoutOptions);
-  // fastify.put("/api/userUpdate/:id")
-  // fastify.delete("/api/userDelete/:id")
+  fastify.put("/api/userUpdate/:id", updateUserOptions);
+  fastify.delete("/api/userDelete/:id", deleteUserOptions);
 
   done();
 }
