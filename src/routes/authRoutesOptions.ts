@@ -2,11 +2,21 @@ import authCtrl from "../controllers/authCtrl";
 
 const User = {
   type: "object",
+  required: ["userId", "firstName", "lastName", "position", "email", "password"],
   properties: {
     userId: { type: "string" },
     firstName: { type: "string" },
     lastName: { type: "string" },
     position: { type: "string" },
+    email: { type: "string" },
+    password: { type: "string" },
+  },
+};
+
+const UserLogin = {
+  type: "object",
+  required: ["email", "password"],
+  properties: {
     email: { type: "string" },
     password: { type: "string" },
   },
@@ -41,6 +51,7 @@ export const registerOptions = {
 
 export const updateUserOptions = {
   schema: {
+    queryString: { type: "string", properties: {userId:"string"} },
     body: User,
     response: {
       201: {
@@ -53,7 +64,7 @@ export const updateUserOptions = {
 
 export const loginOptions = {
   schema: {
-    body: User,
+    body: UserLogin,
     response: {
       201: {
         item: User,
@@ -79,6 +90,7 @@ export const logoutOptions = {
 
 export const deleteUserOptions = {
   schema: {
+    queryString: { type: "string", properties: {userId:"string"} },
     response: {
       201: {
         type: "object",

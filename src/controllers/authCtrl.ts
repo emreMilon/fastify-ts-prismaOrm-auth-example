@@ -4,11 +4,11 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { IUser, IDecodedToken } from "../types/interfaces";
 import generateToken from "../config/generateToken";
-import { RouteGenericInterface } from "fastify/types/route";
 
 const token = {
   active: process.env.ACTIVE_TOKEN_SECRET,
   refresh: process.env.REFRESH_TOKEN_SECRET,
+  access: process.env.ACCESS_TOKEN_SECRET,
 };
 
 const prisma = new PrismaClient();
@@ -47,6 +47,13 @@ const authCtrl = {
   },
   getUsers: async (req: FastifyRequest, reply: FastifyReply) => {
     try {
+      const { tokenn }: any = req.headers;
+      console.log(tokenn);
+      const decoded = <IDecodedToken>jwt.verify(tokenn, `${token?.access}`);
+
+      const { id } = decoded;
+      console.log(id);
+      if (!id) return reply.code(400).send({ message: "Invalid Token" });
       const users: IUser[] = await prisma.user.findMany();
       return reply.code(200).send({
         status: "success",
@@ -133,13 +140,24 @@ const authCtrl = {
   },
   updateUser: async (req: FastifyRequest | any, reply: FastifyReply) => {
     try {
+      const { tokenn }: any = req.headers;
+      const decoded = <IDecodedToken>jwt.verify(tokenn, `${token?.access}`);
+
+      const { id } = decoded;
+      if (!id) return reply.code(400).send({ message: "Invalid Token" });
+
+      if (id !== req.params.id)
+        return reply
+          .code(400)
+          .send({ message: "You are not authorized to update this" });
+
       const { userId, firstName, lastName, position, email, password } = <
         IUser
       >req.body;
       const hashedPassword = await bcrypt.hash(password, 12);
       const user: IUser = await prisma.user.update({
         where: { userId: req.params.id },
-        data: {
+        data: <IUser>{
           userId,
           firstName,
           lastName,
@@ -160,9 +178,27 @@ const authCtrl = {
   },
   delteUser: async (req: FastifyRequest | any, reply: FastifyReply) => {
     try {
+      const { tokenn }: any = req.headers;
+      const decoded = <IDecodedToken>jwt.verify(tokenn, `${token?.access}`);
+
+      const { id } = decoded;
+      if (!id) return reply.code(400).send({ message: "Invalid Token" });
+
+      if (id !== req.params.id)
+        return reply
+          .code(400)
+          .send({ message: "You are not authorized to delete this" });
       const user = await prisma.user.delete({
         where: { userId: req.params.id },
       });
+
+      if (!id) return reply.code(400).send({ message: "Invalid Token" });
+
+      if (id !== req.params.id)
+        return reply
+          .code(400)
+          .send({ message: "You are not authorized to delete this" });
+
       return reply
         .code(200)
         .send({ message: `${user.userId} deleted successfully` });
