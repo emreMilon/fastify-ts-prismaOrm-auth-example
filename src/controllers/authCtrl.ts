@@ -20,7 +20,7 @@ const authCtrl = {
     );
     const user = await prisma.user.findUnique({ where: { email: email } });
     if (user)
-      return reply.code(400).send({ msg: "This email is already registered" });
+      return reply.code(400).send({ message: "This email is already registered" });
     const hashedPassword = await bcrypt.hash(password, 12);
 
     try {
@@ -169,7 +169,7 @@ const authCtrl = {
 
       reply.code(200).send({
         status: "OK",
-        msg: "User updated successfully",
+        message: "User updated successfully",
         data: <IUser>user,
       });
     } catch (error: any) {
