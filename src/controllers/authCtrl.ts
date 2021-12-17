@@ -125,7 +125,7 @@ const authCtrl = {
           .code(400)
           .send({ message: "This account does not exist!" });
       const access_token = generateToken.access({ id: user.userId });
-      reply.code(200).send({ message: "Access token created", access_token });
+      reply.code(200).send({ message: "Access token created", access_token, user });
     } catch (error: any) {
       reply.code(500).send({ message: error.message });
     }
