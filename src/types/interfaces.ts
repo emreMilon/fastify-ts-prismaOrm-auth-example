@@ -13,3 +13,23 @@ export interface IDecodedToken {
     iat: number;
     exp: number;
 }
+
+
+export interface ICustomer {
+    id: string;
+    customerName: string;
+    address: string;
+    telephone: string
+    zip: number;
+}
+
+
+export interface IForecast {
+    forecastId: number;
+    userId: string;
+    customerId: string;
+    customerName: string;
+    customerAddress: string;
+    customerZip: number;
+    price: number;
+}

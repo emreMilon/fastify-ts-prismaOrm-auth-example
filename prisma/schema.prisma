@@ -19,3 +19,28 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
+
+model Customer {
+  id String @unique
+  customerName String 
+  address String
+  telephone String
+  zip Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Forecast {
+  forecastId Int  @id @default(autoincrement())
+  userId String
+  customerId String
+  customerName String
+  customerAddress String
+  customerTel String
+  customerZip Int
+  price Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+

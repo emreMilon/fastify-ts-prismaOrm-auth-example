@@ -25,14 +25,68 @@ const userData: Prisma.UserCreateInput[] = [
     userId: "98547",
     firstName: "Max",
     lastName: "Mustermann",
-    position: "Leiter",
+    position: "Vertrieber",
     email: "max@milon.com",
     password: "12345678",
   },
 ];
 
-async function main() {
-  console.log("Start seeding...");
+const customerData: Prisma.CustomerCreateInput[] = [
+  {
+    id: "15654",
+    customerName: "Forum H4",
+    address: "Moos 54 , Augsburg Germany",
+    telephone: "12356789",
+    zip: 85055,
+  },
+  {
+    id: "15656",
+    customerName: "XXX Therapie",
+    address: "Martin luther Straße 96, München Germany",
+    telephone: "12356789",
+    zip: 81850,
+  },
+  {
+    id: "15698",
+    customerName: "YYY Sport",
+    address: "UnterWeg 45, Regensburg Germany",
+    telephone: "12356789",
+    zip: 96325,
+  },
+];
+
+const forecastData: Prisma.ForecastCreateInput[] = [
+  {
+    userId: "98547",
+    customerId: "15656",
+    customerName: "XXX Therapie",
+    customerAddress: "Martin luther Straße 96, München Germany",
+    customerTel: "12356789",
+    customerZip: 85055,
+    price: 75630,
+  },
+  {
+    userId: "26578",
+    customerId: "15654",
+    customerName: "Forum H4",
+    customerAddress: "Moos 54 , Augsburg Germany",
+    customerTel: "12356789",
+    customerZip: 81850,
+    price: 68500,
+  },
+  {
+    userId: "98547",
+    customerId: "15698",
+    customerName: "YYY Sport",
+    customerAddress: "UnterWeg 45, Regensburg Germany",
+    customerTel: "12356789",
+    customerZip: 96325,
+    price: 75630,
+  },
+];
+
+async function user() {
+  console.log("Start seeding user...");
   for (let u of userData) {
     const hashedPassword = await bcrypt.hash(u.password, 12);
     await prisma.user.create({
@@ -46,10 +100,62 @@ async function main() {
       },
     });
   }
-  console.log("Seeding finished.");
+  console.log("Seeding user finished.");
 }
 
-main()
+async function customer() {
+  console.log("Start seeding customer...");
+  for (let c of customerData) {
+    await prisma.customer.create({
+      data: {
+        id: c.id,
+        customerName: c.customerName,
+        address: c.address,
+        telephone: c.telephone,
+        zip: c.zip,
+      },
+    });
+  }
+  console.log("Seeding customer finished.");
+}
+
+async function forecast() {
+  console.log("Start seeding forecast...");
+  for (let f of forecastData) {
+    await prisma.forecast.create({
+      data: {
+        userId: f.userId,
+        customerId: f.customerId,
+        customerAddress: f.customerAddress,
+        customerName: f.customerName,
+        customerTel: f.customerTel,
+        customerZip: f.customerZip,
+        price: f.price
+      },
+    });
+  }
+  console.log("Seeding forecast finished.");
+}
+
+user()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+
+  customer()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+
+  forecast()
   .catch((e) => {
     console.error(e);
     process.exit(1);

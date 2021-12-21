@@ -18,6 +18,8 @@ const Server = () => {
 Server();
 
 server.register(import("./routes/authRoutes"));
+server.register(import("./routes/customerRoutes"));
+server.register(import("./routes/forecastRoutes"));
 server.register(cookie, {
   secret: `${process.env.REFRESH_TOKEN_SECRET}`,
   parseOptions: {},
