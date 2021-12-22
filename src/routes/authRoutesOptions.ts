@@ -1,9 +1,16 @@
 import authCtrl from "../controllers/authCtrl";
-import yup from "yup"
+import s from "fluent-json-schema";
 
 const User = {
   type: "object",
-  required: ["userId", "firstName", "lastName", "position", "email", "password"],
+  required: [
+    "userId",
+    "firstName",
+    "lastName",
+    "position",
+    "email",
+    "password",
+  ],
   properties: {
     userId: { type: "string" },
     firstName: { type: "string" },
@@ -14,36 +21,24 @@ const User = {
   },
 };
 
-const yupBodySchema = yup?.object().shape({
-  userId: yup
-    .string()
-    .required("Please add your user ID")
-    .matches(/^[0-9]+$/, "Must be only digits")
-    .min(5, "Must be exactly 5 digits")
-    .max(5, "Must be exactly 5 digits"),
-  firstName: yup
-    .string()
-    .required("Name is required")
-    .min(3, "Must be more than 3 characters")
-    .max(30, "Must be less than 30 characters"),
-  lastName: yup
-    .string()
-    .required("Surname is required")
-    .min(3, "Must be more than 3 characters")
-    .max(30, "Must be less than 30 characters"),
-  position: yup.string().required("Please select a position"),
-  email: yup
-    .string()
-    .email("Invalid Email")
-    .required("Email is required!!")
-    .min(2, "Must be more than 2 characters")
-    .max(300, "Must be less than 300 characters"),
-  password: yup
-    .string()
-    .required("No password provided.")
-    .max(150)
-    .min(8, "Password is too short - should be 8 chars minimum. "),
-});
+const jsonRegisterBodySchema = s
+  .object()
+  .prop("userId", s.string().required().maxLength(5).minLength(5))
+  .prop("firstName", s.string().required().maxLength(20).minLength(3))
+  .prop("lastName", s.string().required().maxLength(20).minLength(3))
+  .prop(
+    "position",
+    s.string().required().format(s.FORMATS.EMAIL).maxLength(20).minLength(3)
+  )
+  .prop("email", s.string().required().maxLength(100).minLength(3))
+  .prop("password", s.string().required().minLength(8))
+  .valueOf();
+
+const jsonLoginBodySchema = s
+  .object()
+  .prop("email", s.string().required().maxLength(100).minLength(3))
+  .prop("password", s.string().required().minLength(8))
+  .valueOf();
 
 const UserLogin = {
   type: "object",
@@ -71,10 +66,10 @@ const refreshToken = {
 
 export const registerOptions = {
   schema: {
-    body: {type: "object", properties: yupBodySchema} ,
+    body: jsonRegisterBodySchema,
     response: {
       201: {
-        item: {type: "object", properties: yupBodySchema},
+        item: User,
       },
     },
   },
@@ -83,7 +78,7 @@ export const registerOptions = {
 
 export const updateUserOptions = {
   schema: {
-    queryString: { type: "string", properties: {userId:"string"} },
+    queryString: { type: "string", properties: { userId: "string" } },
     body: User,
     response: {
       201: {
@@ -96,7 +91,7 @@ export const updateUserOptions = {
 
 export const loginOptions = {
   schema: {
-    body: UserLogin,
+    body: jsonLoginBodySchema,
     response: {
       201: {
         item: User,
@@ -122,7 +117,7 @@ export const logoutOptions = {
 
 export const deleteUserOptions = {
   schema: {
-    queryString: { type: "string", properties: {userId:"string"} },
+    queryString: { type: "string", properties: { userId: "string" } },
     response: {
       201: {
         type: "object",
