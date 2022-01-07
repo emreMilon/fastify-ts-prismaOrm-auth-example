@@ -28,9 +28,9 @@ const jsonRegisterBodySchema = s
   .prop("lastName", s.string().required().maxLength(20).minLength(3))
   .prop(
     "position",
-    s.string().required().format(s.FORMATS.EMAIL).maxLength(20).minLength(3)
+    s.string().required().maxLength(20).minLength(3)
   )
-  .prop("email", s.string().required().maxLength(100).minLength(3))
+  .prop('email', s.string().format(s.FORMATS.EMAIL).required())
   .prop("password", s.string().required().minLength(8))
   .valueOf();
 
